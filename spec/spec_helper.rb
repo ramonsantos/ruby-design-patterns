@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'simplecov'
 SimpleCov.start
 
-Dir["lib/**/*.rb"].each {|file| require_relative "../#{file}" }
+Dir["lib/**/*.rb"].each { |file| require_relative "../#{file}" }
 require 'pry'
 
 RSpec.configure do |config|
