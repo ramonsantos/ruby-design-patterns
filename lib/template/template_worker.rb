@@ -1,21 +1,28 @@
-require 'timeout'
+# frozen_string_literal: true
+
 require_relative 'logger'
 
 class TemplateWorker
   attr_reader :logger
 
-  def executar(parametros)
-    antes_execuacao(parametros)
+  def run(params)
+    before_run(params)
+
     begin
-      resultado = trabalhar(parametros)
-    rescue Exception => e
-      @logger.error("#{e.class} ao executar #{self.class}")
-      retry if deve_tentar_novamente(e, parametros)
+      result = perform(params)
+    rescue StandardError => e
+      handle_exception(e, params)
+      @logger.error("#{e.class} to execute #{self.class}")
+
+      retry if try_again?(e, params)
     end
-    resultado
+
+    result
   end
 
-  def antes_execuacao(parametros)
+  def before_run(_params)
     @logger = Logger
   end
+
+  def handle_exception(exception, _params); end
 end

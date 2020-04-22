@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 describe TemplateWorker do
-  it 'deve executar os métodos especificados e logar erros' do
-    e = StandardError.new
-    mensagem_de_erro = "StandardError ao executar TemplateWorker"
-    worker = TemplateWorker.new
+  let(:error_message) { 'StandardError to execute TemplateWorker' }
+  let(:error) { StandardError.new }
 
-    expect(Logger).to receive(:error).with(mensagem_de_erro)
-    expect(worker).to receive(:trabalhar).with({}).and_raise(e)
-    expect(worker).to receive(:deve_tentar_novamente).with(e, {})
+  it 'should execute the specified methods and logs errors' do
+    expect(Logger).to receive(:error).with(error_message)
+    expect(subject).to receive(:perform).with({}).and_raise(error)
+    expect(subject).to receive(:try_again?).with(error, {})
 
-    worker.executar({})
+    subject.run({})
   end
 end

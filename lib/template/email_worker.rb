@@ -1,56 +1,61 @@
+# frozen_string_literal: true
+
 require 'timeout'
 require_relative 'logger'
 require_relative 'template_worker'
 
 class EmailWorker < TemplateWorker
-  attr_reader :limite_timeout, :limite_tentativas, :contador_tentativas
+  attr_reader :timeout_limit, :retry_limit, :attempt_counter
 
   protected
-  def trabalhar(parametros)
-    usuario = buscar_usuario(parametros[:usuario])
-    corpo = gerar_mensagem(parametros[:mensagem],
-                           usuario)
-    assunto = gerar_assunto(parametros[:mensagem],
-                            usuario)
 
-    timeout(@limite_timeout) do
-      enviar_email(de: usuario,
-                   para: parametros[:destinatarios],
-                   assunto: assunto,
-                   corpo: corpo)
+  def perform(params)
+    user = find_user(params[:user])
+    body = build_message(params[:message], user)
+    subject = build_subject(params[:message], user)
+
+    timeout(@timeout_limit) do
+      send_email(
+        from: user,
+        to: params[:recipients],
+        subject: subject,
+        body: body
+      )
     end
   end
 
-  def antes_execuacao(parametros)
-    super(parametros)
-    @limite_timeout = 10
-    @limite_tentativas = 5
-    @contador_tentativas = 0
+  def before_run(params)
+    super(params)
+
+    @timeout_limit = 10
+    @retry_limit = 5
+    @attempt_counter = 0
   end
 
-  def deve_tentar_novamente(e, parametros)
-    @contador_tentativas += 1
-    @contador_tentativas < @limite_tentativas
+  def try_again?(_exception, _params)
+    @attempt_counter += 1
+    @attempt_counter < @retry_limit
   end
 
   private
-  def gerar_mensagem(tipo_de_mensagem, usuario)
-    "corpo do email de #{tipo_de_mensagem} enviado por #{usuario}"
+
+  def build_message(message_kind, user)
+    "email body from #{message_kind} sent by #{user}"
   end
 
-  def gerar_assunto(tipo_de_mensagem, usuario)
-    "#{tipo_de_mensagem} enviado por #{usuario}"
+  def build_subject(message_kind, user)
+    "#{message_kind} sent by #{user}"
   end
 
-  def enviar_email(parametros)
+  def send_email(params)
     {
-      para: parametros[:para],
-      assunto: parametros[:assunto],
-      emails_enviados: parametros[:para].size
+      to: params[:to],
+      subject: params[:subject],
+      sent_emails: params[:to].size
     }
   end
 
-  def buscar_usuario(id_usuario)
-    "Usuario #{id_usuario}"
+  def find_user(user_id)
+    "user #{user_id}"
   end
 end

@@ -1,57 +1,59 @@
+# frozen_string_literal: true
+
 describe EmailWorker do
-  it 'deve mandar um email para cada destinatario' do
-    id_usuario = 1
-    lista_de_destinatarios = ['email@email.com',
-                              'outro_email@email.com',
-                              'email_qualquer@email.com']
-    assunto = 'convite enviado por Usuario 1'
-    email = EmailWorker.new.executar(
-              usuario: id_usuario,
-              destinatarios: lista_de_destinatarios,
-              mensagem: :convite)
-    expect(email[:para]).to eq(lista_de_destinatarios)
-    expect(email[:assunto]).to eq(assunto)
-    expect(email[:emails_enviados]).to eq(3)
+  let(:id_user) { 1 }
+
+  let(:params) do
+    {
+      user: id_user,
+      recipients: recipient_list,
+      message: :invite
+    }
   end
 
-  it 'deve gerenciar erros de timeout' do
-    worker = EmailWorker.new
-    allow(worker).to receive(:enviar_email)
-                      .exactly(5).times
-                      .and_raise(Timeout::Error)
-    id_usuario = 1
-    lista_de_destinatarios = ['email@email.com']
-    expect {
-      worker.executar(
-        usuario: id_usuario,
-        destinatarios: lista_de_destinatarios,
-        mensagem: :convite) }.not_to raise_error
+  context 'when success' do
+    let(:email_subject) { 'invite sent by user 1' }
+    let(:email) { subject.run(params) }
+
+    let(:recipient_list) do
+      [
+        'email@email.com',
+        'outro_email@email.com',
+        'email_qualquer@email.com'
+      ]
+    end
+
+    it 'should send an email to each recipient' do
+      expect(email[:to]).to eq(recipient_list)
+      expect(email[:subject]).to eq(email_subject)
+      expect(email[:sent_emails]).to eq(3)
+    end
   end
 
-  it 'deve logar erros ao enviar email' do
-    worker = EmailWorker.new
-    allow(worker).to receive(:enviar_email).and_raise(Timeout::Error)
-    allow(worker).to receive(:deve_tentar_novamente).and_return(false)
-    id_usuario = 1
-    lista_de_destinatarios = ['email@email.com']
-    log_esperado = 'Timeout::Error ao executar EmailWorker'
-    expect(Logger).to receive(:error).with(log_esperado).at_least(1).times
-    worker.executar(
-      usuario: id_usuario,
-      destinatarios: lista_de_destinatarios,
-      mensagem: :convite)
-  end
+  context 'when error' do
+    let(:recipient_list) { ['email@email.com'] }
+    let(:expected_error_log) { 'Timeout::Error to execute EmailWorker' }
 
-  it 'deve enviar email mesmo apos 4 falhas' do
-    worker = EmailWorker.new
-    expect(worker).to receive(:enviar_email).exactly(4).times.and_raise(Timeout::Error)
-    expect(worker).to receive(:enviar_email).once
-    id_usuario = 1
-    lista_de_destinatarios = ['email@email.com']
-    log_esperado = 'Timeout::Error em EmailWorker.enviar_email'
-    worker.executar(
-      usuario: id_usuario,
-      destinatarios: lista_de_destinatarios,
-      mensagem: :convite)
+    it 'should manage timeout errors' do
+      allow(subject).to receive(:send_email).exactly(5).times.and_raise(Timeout::Error)
+
+      expect { subject.run(params) }.not_to raise_error
+    end
+
+    it 'should log errors when sending email' do
+      allow(subject).to receive(:send_email).and_raise(Timeout::Error)
+      allow(subject).to receive(:try_again).and_return(false)
+      expect(Logger).to receive(:error).with(expected_error_log).at_least(1).times
+
+      subject.run(params)
+    end
+
+    it 'should send email even after 4 failures' do
+      expect(subject).to receive(:send_email).exactly(4).times.and_raise(Timeout::Error)
+      expect(subject).to receive(:send_email).once
+      expect(Logger).to receive(:error).with(expected_error_log).at_least(1).times
+
+      subject.run(params)
+    end
   end
 end

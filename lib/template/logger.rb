@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class Logger
   def self.error(mensagem)
-    # logar mensagem em um arquivo
+    # logs message to file
   end
 end
