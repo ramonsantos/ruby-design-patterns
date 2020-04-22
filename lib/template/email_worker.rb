@@ -1,30 +1,36 @@
 require 'timeout'
 require_relative 'logger'
+require_relative 'template_worker'
 
-class EmailWorker
-  def enviar parametros
-    @limite_timeout = 10
-    @limite_tentativas = 5
-    @logger = Logger
+class EmailWorker < TemplateWorker
+  attr_reader :limite_timeout, :limite_tentativas, :contador_tentativas
 
+  protected
+  def trabalhar(parametros)
     usuario = buscar_usuario(parametros[:usuario])
     corpo = gerar_mensagem(parametros[:mensagem],
                            usuario)
     assunto = gerar_assunto(parametros[:mensagem],
-                           usuario)
-    contador_tentativas = 0
-    begin
-      timeout(@limite_timeout) do
-        enviar_email(de: usuario,
-                     para: parametros[:destinatarios],
-                     assunto: assunto,
-                     corpo: corpo)
-      end
-    rescue Timeout::Error
-      contador_tentativas += 1
-      @logger.error("Timeout::Error em EmailWorker.enviar_email")
-      retry if contador_tentativas < @limite_tentativas
+                            usuario)
+
+    timeout(@limite_timeout) do
+      enviar_email(de: usuario,
+                   para: parametros[:destinatarios],
+                   assunto: assunto,
+                   corpo: corpo)
     end
+  end
+
+  def antes_execuacao(parametros)
+    super(parametros)
+    @limite_timeout = 10
+    @limite_tentativas = 5
+    @contador_tentativas = 0
+  end
+
+  def deve_tentar_novamente(e, parametros)
+    @contador_tentativas += 1
+    @contador_tentativas < @limite_tentativas
   end
 
   private

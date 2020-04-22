@@ -5,7 +5,7 @@ describe EmailWorker do
                               'outro_email@email.com',
                               'email_qualquer@email.com']
     assunto = 'convite enviado por Usuario 1'
-    email = EmailWorker.new.enviar(
+    email = EmailWorker.new.executar(
               usuario: id_usuario,
               destinatarios: lista_de_destinatarios,
               mensagem: :convite)
@@ -16,11 +16,13 @@ describe EmailWorker do
 
   it 'deve gerenciar erros de timeout' do
     worker = EmailWorker.new
-    allow(worker).to receive(:enviar_email).and_raise(Timeout::Error)
+    allow(worker).to receive(:enviar_email)
+                      .exactly(5).times
+                      .and_raise(Timeout::Error)
     id_usuario = 1
     lista_de_destinatarios = ['email@email.com']
     expect {
-      worker.enviar(
+      worker.executar(
         usuario: id_usuario,
         destinatarios: lista_de_destinatarios,
         mensagem: :convite) }.not_to raise_error
@@ -29,11 +31,12 @@ describe EmailWorker do
   it 'deve logar erros ao enviar email' do
     worker = EmailWorker.new
     allow(worker).to receive(:enviar_email).and_raise(Timeout::Error)
+    allow(worker).to receive(:deve_tentar_novamente).and_return(false)
     id_usuario = 1
     lista_de_destinatarios = ['email@email.com']
-    log_esperado = 'Timeout::Error em EmailWorker.enviar_email'
+    log_esperado = 'Timeout::Error ao executar EmailWorker'
     expect(Logger).to receive(:error).with(log_esperado).at_least(1).times
-    worker.enviar(
+    worker.executar(
       usuario: id_usuario,
       destinatarios: lista_de_destinatarios,
       mensagem: :convite)
@@ -46,7 +49,7 @@ describe EmailWorker do
     id_usuario = 1
     lista_de_destinatarios = ['email@email.com']
     log_esperado = 'Timeout::Error em EmailWorker.enviar_email'
-    worker.enviar(
+    worker.executar(
       usuario: id_usuario,
       destinatarios: lista_de_destinatarios,
       mensagem: :convite)
