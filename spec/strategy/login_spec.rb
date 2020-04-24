@@ -1,33 +1,33 @@
+# frozen_string_literal: true
+
 describe Login do
-  context 'fazendo login via FaceNote' do
-    it 'utiliza LoginViaFaceNote para autenticar' do
-      parametros =
+  context 'logging in by FaceNote' do
+    it 'uses LoginByFaceNote to authenticate' do
+      params =
         {
-          metodo: :facenote,
-          dados: {
-            usuario: 'Gil'
+          method: :facenote,
+          data: {
+            user: 'Gil'
           }
         }
-      expect(LoginViaFaceNote).to receive(:autenticar)
-                                    .with(parametros[:dados])
-      expect(LoginViaZuiter).to receive(:autenticar).never
-      Login.com(parametros)
+      expect(LoginByFaceNote).to receive(:authenticate).with(params[:data])
+      expect(LoginByZuiter).to receive(:authenticate).never
+      Login.with(params)
     end
   end
 
-  context 'fazendo login via Zuiter' do
-    it 'utiliza LoginViaZuiter para autenticar' do
-      parametros =
+  context 'logging in via Zuiter' do
+    it 'uses LoginByZuiter to authenticate' do
+      params =
         {
-          metodo: :zuiter,
-          dados: {
-            usuario: 'Gil'
+          method: :zuiter,
+          data: {
+            user: 'Gil'
           }
         }
-      expect(LoginViaZuiter).to receive(:autenticar)
-                                    .with(parametros[:dados])
-      expect(LoginViaFaceNote).to receive(:autenticar).never
-      Login.com(parametros)
+      expect(LoginByZuiter).to receive(:authenticate).with(params[:data])
+      expect(LoginByFaceNote).to receive(:authenticate).never
+      Login.with(params)
     end
   end
 end

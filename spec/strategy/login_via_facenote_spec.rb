@@ -1,30 +1,26 @@
+# frozen_string_literal: true
+
 require_relative 'servico_facenote_login_stub'
 
-describe LoginViaFaceNote do
-  it 'retorna sucesso para o usuário Gil' do
-    parametros = {
-      usuario: 'Gil'
-    }
-    resposta = LoginViaFaceNote.autenticar(parametros)
-    expect(resposta[:status]).to be true
-    expect(resposta[:mensagem]).to eq('login com sucesso')
+describe LoginByFaceNote do
+  it 'returns success to user Gil' do
+    params = { user: 'Gil' }
+    response = LoginByFaceNote.authenticate(params)
+    expect(response[:status]).to be_truthy
+    expect(response[:message]).to eq('login successfully')
   end
 
-  it 'retorna acesso revocado para usuario Ana' do
-    parametros = {
-      usuario: 'Ana'
-    }
-    resposta = LoginViaFaceNote.autenticar(parametros)
-    expect(resposta[:status]).to be false
-    expect(resposta[:mensagem]).to eq('acesso revocado')
+  it 'returns revoked access for user Ana' do
+    params = { user: 'Ana' }
+    response = LoginByFaceNote.authenticate(params)
+    expect(response[:status]).to be_falsey
+    expect(response[:message]).to eq('revoked access')
   end
 
-  it 'retorna acesso bloqueado para usuario Celso' do
-    parametros = {
-      usuario: 'Celso'
-    }
-    resposta = LoginViaFaceNote.autenticar(parametros)
-    expect(resposta[:status]).to be false
-    expect(resposta[:mensagem]).to eq('aplicação bloqueada')
+  it 'returns blocked access for user Celso' do
+    params = { user: 'Celso' }
+    response = LoginByFaceNote.authenticate(params)
+    expect(response[:status]).to be_falsey
+    expect(response[:message]).to eq('blocked application')
   end
 end

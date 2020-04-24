@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class Login
-  def self.com(parametros)
-    if parametros[:metodo] == :facenote
-      LoginViaFaceNote.autenticar(parametros[:dados])
-    elsif parametros[:metodo] == :zuiter
-      LoginViaZuiter.autenticar(parametros[:dados])
+  def self.with(params)
+    if params[:method] == :facenote
+      LoginByFaceNote.authenticate(params[:data])
+    elsif params[:method] == :zuiter
+      LoginByZuiter.authenticate(params[:data])
     end
   end
 end
