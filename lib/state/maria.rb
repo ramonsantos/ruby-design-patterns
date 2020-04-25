@@ -1,22 +1,25 @@
+# frozen_string_literal: true
+
 class Maria
-  attr_reader :estado_atual
+  attr_reader :current_state
+
   def initialize
-    @estado_atual = Pequena.new
+    @current_state = Little.new
   end
 
-  def pegar_flor_de_gelo
-    @estado_atual = @estado_atual.pegar_flor_de_gelo
+  def take_ice_flower
+    @current_state = @current_state.take_ice_flower
   end
 
-  def pegar_flor_de_fogo
-    @estado_atual = @estado_atual.pegar_flor_de_fogo
+  def take_fire_flower
+    @current_state = @current_state.take_fire_flower
   end
 
-  def pegar_estrela
-    @estado_atual = @estado_atual.pegar_estrela
+  def take_star
+    @current_state = @current_state.take_star
   end
 
-  def levar_dano
-    @estado_atual = @estado_atual.levar_dano
+  def take_damage
+    @current_state = @current_state.take_damage
   end
 end

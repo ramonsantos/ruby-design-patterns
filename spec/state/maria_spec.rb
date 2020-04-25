@@ -1,117 +1,103 @@
+# frozen_string_literal: true
+
 describe Maria do
-  context 'quando o estado atual é pequena' do
-    it 'pega flor de fogo e muda o estado para flor de fogo' do
-      maria = Maria.new
-      maria.pegar_flor_de_fogo
-      expect(maria.estado_atual).to be_kind_of(FlorDeFogo)
+  context 'when the current state is litte' do
+    it 'takes fire flower and changes state to fire flower' do
+      subject.take_fire_flower
+      expect(subject.current_state).to be_kind_of(FireFlower)
     end
 
-    it 'pega flor de gelo e muda o estado para flor de gelo' do
-      maria = Maria.new
-      maria.pegar_flor_de_gelo
-      expect(maria.estado_atual).to be_kind_of(FlorDeGelo)
+    it 'takes ice flower and changes state to ice flower' do
+      subject.take_ice_flower
+      expect(subject.current_state).to be_kind_of(IceFlower)
     end
 
-    it 'pega estrela e muda o estado para estrela' do
-      maria = Maria.new
-      maria.pegar_estrela
-      expect(maria.estado_atual).to be_kind_of(Estrela)
+    it 'take star and change state to star' do
+      subject.take_star
+      expect(subject.current_state).to be_kind_of(Star)
     end
 
-    it 'leva dano e morre' do
-      maria = Maria.new
-      maria.levar_dano
-      expect(maria.estado_atual).to be_kind_of(Morta)
+    it 'takes damage and dies' do
+      subject.take_damage
+      expect(subject.current_state).to be_kind_of(Dead)
     end
   end
 
-  context 'quando o estado atual é flor de gelo' do
-    it 'pega flor de fogo e muda o estado para flor de fogo' do
-      maria = Maria.new
-      maria.pegar_flor_de_gelo
-      maria.pegar_flor_de_fogo
-      expect(maria.estado_atual).to be_kind_of(FlorDeFogo)
+  context 'when the current state is ice flower' do
+    it 'takes fire flower and changes state to fire flower' do
+      subject.take_ice_flower
+      subject.take_fire_flower
+      expect(subject.current_state).to be_kind_of(FireFlower)
     end
 
-    it 'pega flor de gelo e continua no estado flor de gelo' do
-      maria = Maria.new
-      maria.pegar_flor_de_gelo
-      maria.pegar_flor_de_gelo
-      expect(maria.estado_atual).to be_kind_of(FlorDeGelo)
+    it 'picks ice flower and remains in ice flower state' do
+      subject.take_ice_flower
+      subject.take_ice_flower
+      expect(subject.current_state).to be_kind_of(IceFlower)
     end
 
-    it 'pega estrela e muda o estado para estrela' do
-      maria = Maria.new
-      maria.pegar_flor_de_gelo
-      maria.pegar_estrela
-      expect(maria.estado_atual).to be_kind_of(Estrela)
+    it 'take star and change state to star' do
+      subject.take_ice_flower
+      subject.take_star
+      expect(subject.current_state).to be_kind_of(Star)
     end
 
-    it 'leva dano e fica pequena' do
-      maria = Maria.new
-      maria.pegar_flor_de_gelo
-      maria.levar_dano
-      expect(maria.estado_atual).to be_kind_of(Pequena)
+    it 'takes damage and gets little' do
+      subject.take_ice_flower
+      subject.take_damage
+      expect(subject.current_state).to be_kind_of(Little)
     end
   end
 
-  context 'quando o estado atual é estrela' do
-    it 'pega flor de fogo e continua no estado estrela' do
-      maria = Maria.new
-      maria.pegar_estrela
-      maria.pegar_flor_de_fogo
-      expect(maria.estado_atual).to be_kind_of(Estrela)
+  context 'when the current state is star' do
+    it 'catches fire flower and remains in the star state' do
+      subject.take_star
+      subject.take_fire_flower
+      expect(subject.current_state).to be_kind_of(Star)
     end
 
-    it 'pega flor de gelo e continua no estado estrela' do
-      maria = Maria.new
-      maria.pegar_estrela
-      maria.pegar_flor_de_gelo
-      expect(maria.estado_atual).to be_kind_of(Estrela)
+    it 'picks ice flower and remains in star state' do
+      subject.take_star
+      subject.take_ice_flower
+      expect(subject.current_state).to be_kind_of(Star)
     end
 
-    it 'pega estrela e continua no estado estrela' do
-      maria = Maria.new
-      maria.pegar_estrela
-      maria.pegar_estrela
-      expect(maria.estado_atual).to be_kind_of(Estrela)
+    it 'picks up star and remains in star state' do
+      subject.take_star
+      subject.take_star
+      expect(subject.current_state).to be_kind_of(Star)
     end
 
-    it 'leva dano e continua no estado estrela' do
-      maria = Maria.new
-      maria.pegar_estrela
-      maria.levar_dano
-      expect(maria.estado_atual).to be_kind_of(Estrela)
+    it 'takes damage and remains in the star state' do
+      subject.take_star
+      subject.take_damage
+      expect(subject.current_state).to be_kind_of(Star)
     end
   end
 
-  context 'quando o estado atual é flor de fogo' do
-    it 'pega flor de fogo e continua no estado flor de fogo' do
-      maria = Maria.new
-      maria.pegar_flor_de_fogo
-      maria.pegar_flor_de_fogo
-      expect(maria.estado_atual).to be_kind_of(FlorDeFogo)
+  context 'when the current state is flower of fire' do
+    it 'catches fire flower and remains in fire flower state' do
+      subject.take_fire_flower
+      subject.take_fire_flower
+      expect(subject.current_state).to be_kind_of(FireFlower)
     end
 
-    it 'pega flor de gelo e muda o estado para flor de gelo' do
-      maria = Maria.new
-      maria.pegar_flor_de_fogo
-      maria.pegar_flor_de_gelo
-      expect(maria.estado_atual).to be_kind_of(FlorDeGelo)
+    it 'takes ice flower and changes state to ice flower' do
+      subject.take_fire_flower
+      subject.take_ice_flower
+      expect(subject.current_state).to be_kind_of(IceFlower)
     end
 
-    it 'pega estrela e muda o estado para estrela' do
-      maria = Maria.new
-      maria.pegar_flor_de_fogo
-      maria.pegar_estrela
-      expect(maria.estado_atual).to be_kind_of(Estrela)
+    it 'take star and change state to star' do
+      subject.take_fire_flower
+      subject.take_star
+      expect(subject.current_state).to be_kind_of(Star)
     end
 
-    it 'leva dano e fica pequena' do
-      maria = Maria.new
-      maria.pegar_flor_de_fogo
-      maria.levar_dano
-      expect(maria.estado_atual).to be_kind_of(Pequena)
+    it 'takes damage and gets little' do
+      subject.take_fire_flower
+      subject.take_damage
+      expect(subject.current_state).to be_kind_of(Little)
     end
   end
 end
