@@ -33,9 +33,9 @@ describe CarBuilder do
 
     it 'should create a car with manufacturer, model and license_plate' do
       builder = CarBuilder.new
-                  .with_manufacturer('Fabricante DCBA')
-                  .with_model('Modelo B321')
-                  .with_license_plate('CBA4321')
+                          .with_manufacturer('Fabricante DCBA')
+                          .with_model('Modelo B321')
+                          .with_license_plate('CBA4321')
       car = builder.build_car
       expect(car.manufacturer).to eq('Fabricante DCBA')
       expect(car.model).to eq('Modelo B321')

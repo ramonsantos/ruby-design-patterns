@@ -14,7 +14,7 @@ class EmailWorker < TemplateWorker
     body = build_message(params[:message], user)
     subject = build_subject(params[:message], user)
 
-    timeout(@timeout_limit) do
+    Timeout.timeout(@timeout_limit) do
       send_email(
         from: user,
         to: params[:recipients],

@@ -6,8 +6,8 @@ describe Car do
       manufacturing_year = 2000
       model_year = 1999
       builder = CarBuilder.new
-                  .with_manufacturing_year(manufacturing_year)
-                  .with_model_year(model_year)
+                          .with_manufacturing_year(manufacturing_year)
+                          .with_model_year(model_year)
       invalid_car = builder.build_car
       erro = 'model year cannot be earlier than the year of manufacture'
       expect(invalid_car.validate!).to be_falsey

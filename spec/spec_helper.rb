@@ -3,8 +3,7 @@
 require 'simplecov'
 SimpleCov.start
 
-Dir["lib/**/*.rb"].each { |file| require_relative "../#{file}" }
-require 'pry'
+Dir['lib/**/*.rb'].each { |file| require_relative "../#{file}" }
 
 RSpec.configure do |config|
   config.mock_framework = :rspec
